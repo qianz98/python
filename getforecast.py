@@ -1,10 +1,16 @@
- #coding:UTF-8
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Jan 27 14:12:22 2018
 
-import urllib2  
-import urllib
+@author: eric
+"""
+
+
+#import urllib2  
+#import urllib
 import requests
 import json
-import sys
+#import sys
 import time 
 
 
@@ -14,11 +20,11 @@ import time
 def Show58467F(js58467):
     #显示
                 format='%Y-%m-%d %H:%M:%S'
-                data1=time.localtime(js58467['serviceTime'])
-                dt=time.strftime(format,data1)               
+#                data1=time.localtime(js58467['serviceTime'])
+#                dt=time.strftime(format,data1)               
                 data2=js58467['resultStatus']
                 data3=js58467['resultInfo']
-                data4=data1,data2,data3
+                data4=js58467['resultData']
                 if   js58467['resultData']!="":
                         print  ('no data!')
                         return dt
@@ -73,11 +79,23 @@ if __name__ == '__main__':
     'uuid':uuid,
     'stationNo':'58467',
     }
+    
     #url='http://api.avatardata.cn/Weather/Query'
     s58467=requests.get(url03,params=value58467)
     js58467=s58467.json()
+    print(js58467)
+    
+    with open('aaa.json', 'w') as f:
+       data = json.load(f)
+    
+    
+    
+   # result = [(d['tqzk'], d['minTemp']) for d in js58467['resultData']]
+    
 
-
+    
+    #data = json.loads(s58467)
+    
     f = open("out.txt","w")
     dd2= "eric edit"
     dd=Show58467F(js58467)
