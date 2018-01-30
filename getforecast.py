@@ -27,7 +27,7 @@ def Show58467F(js58467):
                 data4=js58467['resultData']
                 if   js58467['resultData']!="":
                         print  ('no data!')
-                        return dt
+                        return 
     
     #预报天气状况
 
@@ -71,25 +71,31 @@ if __name__ == '__main__':
     
     
 
-    url03= "http://61.175.135.197:8888/NbApi/outForecast7Day.do"
+    url= "http://61.175.135.197:8888/NbApi/outForecast7Day.do"
    
-   #uuid='9d8f677c-1a75-49c3-8ca4-bf77d6ebd1d7'
     value58467={
     'code':'A100023',
     'uuid':uuid,
     'stationNo':'58467',
     }
     
-    #url='http://api.avatardata.cn/Weather/Query'
-    s58467=requests.get(url03,params=value58467)
-    js58467=s58467.json()
-    print(js58467)
-    
-    with open('aaa.json', 'w') as f:
-       data = json.load(f)
-    
-    
-    
+ 
+
+    s58467=requests.get(url,params=value58467)
+    data58467 = json.loads(s58467.text) 
+    for d58467 in data58467["resultData"]: 
+       if d58467["fcstHour"] == '24': 
+           cx24="慈溪 " + d58467["tqzk"] + " " + d58467["minTemp"] + " " + d58467["maxTemp"]
+           print (cx24)  
+    for d58467 in data58467["resultData"]:        
+       if d58467["fcstHour"] == '48': 
+           cx48="慈溪 " + d58467["tqzk"] + " " + d58467["minTemp"] + " " + d58467["maxTemp"]
+           print (cx48)  
+    for d58467 in data58467["resultData"]:        
+       if d58467["fcstHour"] == '72': 
+           cx72="慈溪 " + d58467["tqzk"] + " " + d58467["minTemp"] + " " + d58467["maxTemp"]
+           print (cx72)         
+           
    # result = [(d['tqzk'], d['minTemp']) for d in js58467['resultData']]
     
 
