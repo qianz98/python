@@ -12,15 +12,17 @@ import requests
 import json
 #import sys
 import time 
-
+import datetime
 
  
 
 
 def getData(uuid):
     #显示
+
     ftext=""  
-    format='%Y-%m-%d %H:%M:%S'
+    format2='%Y-%m-%d %H:%M:%S'
+    format='%Y-%m-%d'
     url= "http://61.175.135.197:8888/NbApi/outForecast7Day.do"
     value58467={'code':'A100023','uuid':uuid,'stationNo':'58467',}
     value58562={'code':'A100023','uuid':uuid,'stationNo':'58562',}  
@@ -35,11 +37,19 @@ def getData(uuid):
     s58562=requests.get(url,params=value58562)
     data58562 = json.loads(s58562.text) 
     if   data58562['resultStatus']=="1":
-        timestamp=data58562['releaseTime']/1000  #python里时间戳是10位。而java里默认是13位（精确到毫秒）
-        STIME=time.localtime(timestamp)
-        ST=time.strftime(format,STIME)   
+        #python里时间戳是10位。而java里默认是13位（精确到毫秒）
+        rel_time=time.localtime(data58562['releaseTime']/1000)
+        T24=time.localtime(data58562['releaseTime']/1000+24*60*60)
+        T48=time.localtime(data58562['releaseTime']/1000+2*24*60*60)
+        T72=time.localtime(data58562['releaseTime']/1000+3*24*60*60)
+        ST=time.strftime(format2,rel_time)  
+        ST24=time.strftime(format,T24)  
+        ST48=time.strftime(format,T48)   
+        ST72=time.strftime(format,T72)   
         print (ST)    
-
+        print (ST24)
+        print (ST48)
+        print (ST72)
         for d58562 in data58562["resultData"]: 
             if d58562["fcstHour"] == '12': 
                 yz12=d58562["tqzk"]
@@ -266,14 +276,13 @@ def getData(uuid):
             if d58566["fcstHour"] == '72': 
                 xs72="象山 " + xs60  + " " + d58566["tqzk"] + " " + d58566["minTemp"] + " " + d58566["maxTemp"]
                 #print (xs72)            
-                ftext= "明天"+ "\n" + nb24 + "\n" + bl24 + "\n" + zh24 + "\n" + cx24 + "\n" + yz24 + "\n" + yy24 + "\n" + fh24 + "\n" + nh24 + "\n" + xs24 + "\n" + "后天" + "\n" + nb48 + "\n" + bl48 + "\n" + zh48 + "\n" + cx48 + "\n" + yz48 + "\n" + yy48 + "\n" + fh48 + "\n" + nh48 + "\n" + xs48 + "\n" + "大后天" + "\n" + nb72 + "\n" + bl72 + "\n" + zh72 + "\n" + cx72 + "\n" + yz72 + "\n" + yy72 + "\n" + fh72 + "\n" + nh72 + "\n" + xs72 + "\n"  
+                ftext= ST24+ "\n" + nb24 + "\n" + bl24 + "\n" + zh24 + "\n" + cx24 + "\n" + yz24 + "\n" + yy24 + "\n" + fh24 + "\n" + nh24 + "\n" + xs24 + "\n" + ST48 + "\n" + nb48 + "\n" + bl48 + "\n" + zh48 + "\n" + cx48 + "\n" + yz48 + "\n" + yy48 + "\n" + fh48 + "\n" + nh48 + "\n" + xs48 + "\n" + ST72 + "\n" + nb72 + "\n" + bl72 + "\n" + zh72 + "\n" + cx72 + "\n" + yz72 + "\n" + yy72 + "\n" + fh72 + "\n" + nh72 + "\n" + xs72 + "\n" + "预报发布时间：" + ST  
                 #print (ftext)            
                 return ftext
 
-                else: 
-    
-                    ftext=data58562['resultInfo']
-                    return ftext
+    else: 
+        ftext=data58562['resultInfo']
+        return ftext
 
          
     
