@@ -12,17 +12,19 @@ import requests
 import json
 #import sys
 import time 
-import datetime
+import locale
 
  
 
 
 def getData(uuid):
     #显示
+    
+    locale.setlocale(locale.LC_CTYPE, 'chinese')
 
     ftext=""  
-    format2='%Y-%m-%d %H:%M:%S'
-    format='%Y-%m-%d'
+    format2='%Y年%m月%d日 %H时%M分%S秒'
+    format='%Y年%m月%d日'
     url= "http://61.175.135.197:8888/NbApi/outForecast7Day.do"
     value58467={'code':'A100023','uuid':uuid,'stationNo':'58467',}
     value58562={'code':'A100023','uuid':uuid,'stationNo':'58562',}  
@@ -39,6 +41,7 @@ def getData(uuid):
     if   data58562['resultStatus']=="1":
         #python里时间戳是10位。而java里默认是13位（精确到毫秒）
         rel_time=time.localtime(data58562['releaseTime']/1000)
+        print(time.strftime('%Y{y}%m{m}%d{d}').format(y='年', m='月', d='日'))
         T24=time.localtime(data58562['releaseTime']/1000+24*60*60)
         T48=time.localtime(data58562['releaseTime']/1000+2*24*60*60)
         T72=time.localtime(data58562['releaseTime']/1000+3*24*60*60)
