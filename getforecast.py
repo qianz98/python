@@ -5,7 +5,6 @@ Created on Sat Jan 27 14:12:22 2018
 @author: eric
 """
 
-
 #import urllib2  
 #import urllib
 import requests
@@ -13,10 +12,25 @@ import json
 #import sys
 import time 
 import locale
+from ftplib import FTP
 
- 
 
 
+def ftpconnect(host, username, password):
+    ftp = FTP()
+    # ftp.set_debuglevel(2)
+    ftp.connect(host, 21)
+    ftp.login(username, password)
+    return ftp
+
+def uploadfile(ftp, remotepath, localpath):
+    bufsize = 1024
+    fp = open(localpath, 'rb')
+    ftp.storbinary('STOR ' + remotepath, fp, bufsize)
+    ftp.set_debuglevel(0)
+    fp.close()
+
+    
 def getData(uuid):
     #显示
     
@@ -41,7 +55,6 @@ def getData(uuid):
     if   data58562['resultStatus']=="1":
         #python里时间戳是10位。而java里默认是13位（精确到毫秒）
         rel_time=time.localtime(data58562['releaseTime']/1000)
-        print(time.strftime('%Y{y}%m{m}%d{d}').format(y='年', m='月', d='日'))
         T24=time.localtime(data58562['releaseTime']/1000+24*60*60)
         T48=time.localtime(data58562['releaseTime']/1000+2*24*60*60)
         T72=time.localtime(data58562['releaseTime']/1000+3*24*60*60)
@@ -49,10 +62,10 @@ def getData(uuid):
         ST24=time.strftime(format,T24)  
         ST48=time.strftime(format,T48)   
         ST72=time.strftime(format,T72)   
-        print (ST)    
-        print (ST24)
-        print (ST48)
-        print (ST72)
+        #print (ST)    
+        #print (ST24)
+        #print (ST48)
+        #print (ST72)
         for d58562 in data58562["resultData"]: 
             if d58562["fcstHour"] == '12': 
                 yz12=d58562["tqzk"]
@@ -308,6 +321,7 @@ def getUUID(js02):
 
 if __name__ == '__main__':
     
+    
     url01="http://61.175.135.197:8888/NbApi/out.do"
     value01={
     'code':'A100000',
@@ -316,7 +330,6 @@ if __name__ == '__main__':
     s01=requests.get(url01,params=value01)
     js01=s01.json()
     yzm=getYZM(js01)
-
 
     url02="http://61.175.135.197:8888/NbApi/outyzm.do"
     value02={
@@ -328,15 +341,14 @@ if __name__ == '__main__':
     js02=s02.json()
     uuid=getUUID(js02)
 
-    
     txt=getData(uuid)
-    #print (txt)
-   
-    
-    f = open("out.txt","w")
+    #print (txt) 
+    f = open("tqyb.txt","w")
     f.write(txt)
     f.close()
-
+    #ftp = ftpconnect("172.21.146.40", "share", "share")
+    #uploadfile(ftp, "tqyb.txt", "tqyb.txt")
+    #ftp.quit()
 
 
     
