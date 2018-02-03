@@ -5,16 +5,70 @@ Created on Sat Jan 27 14:12:22 2018
 @author: eric
 """
 
-#import urllib2  
-#import urllib
+from datetime import datetime, timedelta
 import requests
 import json
-#import sys
-import time 
 import locale
 from ftplib import FTP
+import time
+def runTask(func, day=0, hour=0, min=0, second=0):
+  # Init time
+  now = datetime.now()
+  strnow = now.strftime('%Y-%m-%d %H:%M:%S')
+  print ("now:",strnow)
+  # First next run time
+  period = timedelta(days=day, hours=hour, minutes=min, seconds=second)
+  next_time = now + period
+  strnext_time = next_time.strftime('%Y-%m-%d %H:%M:%S')
+  print ("next run:",strnext_time)
+  while True:
+      # Get system current time
+      iter_now = datetime.now()
+      iter_now_time = iter_now.strftime('%Y-%m-%d %H:%M:%S')
+      if str(iter_now_time) == str(strnext_time):
+          # Get every start work time
+          print ("start work: %s" % iter_now_time)
+          # Call task func
+          func()
+          print ("task done.")
+          # Get next iteration time
+          iter_time = iter_now + period
+          strnext_time = iter_time.strftime('%Y-%m-%d %H:%M:%S')
+          print ("next_iter: %s" % strnext_time)
+          # Continue next iteration
+          continue
+ 
+def task():
+    url01="http://61.175.135.197:8888/NbApi/out.do"
+    value01={
+    'code':'A100000',
+    'cellphone':'18657431030',
+    }
+    s01=requests.get(url01,params=value01)
+    js01=s01.json()
+    yzm=getYZM(js01)
+
+    url02="http://61.175.135.197:8888/NbApi/outyzm.do"
+    value02={
+    'code':'A100001',
+    'cellphone':'18657431030',
+    'yzm':yzm,
+    }
+    s02=requests.get(url02,params=value02)
+    js02=s02.json()
+    uuid=getUUID(js02)
+
+    txt=getData(uuid)
+    #print (txt) 
+    f = open("tqyb.txt","w")
+    f.write(txt)
+    f.close()
+    ftp = ftpconnect("hyu3508580001.my3w.com", "hyu3508580001", "nbqxfwgs")
+    uploadfile(ftp, "/htdocs/data/tqyb.txt", "tqyb.txt")
+    ftp.quit()
 
 
+        
 
 def ftpconnect(host, username, password):
     ftp = FTP()
@@ -320,35 +374,8 @@ def getUUID(js02):
 
 
 if __name__ == '__main__':
+    runTask(task, day=0, hour=0, min=5)
     
-    
-    url01="http://61.175.135.197:8888/NbApi/out.do"
-    value01={
-    'code':'A100000',
-    'cellphone':'18657431030',
-    }
-    s01=requests.get(url01,params=value01)
-    js01=s01.json()
-    yzm=getYZM(js01)
-
-    url02="http://61.175.135.197:8888/NbApi/outyzm.do"
-    value02={
-    'code':'A100001',
-    'cellphone':'18657431030',
-    'yzm':yzm,
-    }
-    s02=requests.get(url02,params=value02)
-    js02=s02.json()
-    uuid=getUUID(js02)
-
-    txt=getData(uuid)
-    #print (txt) 
-    f = open("tqyb.txt","w")
-    f.write(txt)
-    f.close()
-    #ftp = ftpconnect("172.21.146.40", "share", "share")
-    #uploadfile(ftp, "tqyb.txt", "tqyb.txt")
-    #ftp.quit()
 
 
     
